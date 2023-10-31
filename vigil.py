@@ -1,12 +1,9 @@
-# Import Libraries
+#IMPORT LIBRARIES
+import pickle
 
-import matplotlib
-import matplotlib.pyplot as plt
-import numpy as np 
-import pandas as pd
-import seaborn as sb
-import klib as kl
-import sklearn
-import imblearn
+knn_loaded = pickle.load('ids_model','rb')
+
+#knn_loaded.predict()
+
 
 
