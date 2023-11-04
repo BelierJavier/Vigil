@@ -1,5 +1,9 @@
+### LINUX VERSION ###
+
+#!/usr/bin/env python
+
 # IMPORT LIBRARIES
-import pickle
+#import pickle
 import socket
 import struct
 #import textwrap
@@ -7,7 +11,7 @@ import struct
 #knn_loaded = pickle.load('ids_model','rb')
 
 def main():
-    connection = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
+    connection = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.ntohs(3))
 
     while True:
         raw_data, addr = connection.recvfrom(65536)
