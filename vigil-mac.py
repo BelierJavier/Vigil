@@ -8,9 +8,9 @@ import struct
 
 #knn_loaded = pickle.load('ids_model','rb')
 
-def sniff(interface):
+def sniff():
     sniffer = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
-    sniffer.bind((interface, 0))
+    sniffer.bind(("10.11.97.254", 80))
     sniffer.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
     
     try:
@@ -31,5 +31,6 @@ def unpack_frame(raw_packet):
     return socket.inet_ntoa(dest_ip), socket.inet_ntoa(src_ip), proto, data
 
 if __name__ == "__main__" :
+    
     interface = "en0"
-    sniff(interface)
+    sniff()
