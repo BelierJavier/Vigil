@@ -1,7 +1,5 @@
 ### LINUX VERSION ###
 
-#!/usr/bin/env python
-
 # IMPORT LIBRARIES
 #import pickle
 import socket
@@ -10,15 +8,24 @@ import struct
 
 #knn_loaded = pickle.load('ids_model','rb')
 
+class Stream():
+    pass
+
 def sniff():
-    connection = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.ntohs(3))
+    TCP_conn = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
 
-    while True:
-        raw_data, addr = connection.recvfrom(65536)
-        dest_mac, src_mac, eth_proto, data = unpack_frame(raw_data)
-        print('\nEthernet Frame:')
-        print('Destination: {}, Source: {}, Protocol: {}'.format(dest_mac, src_mac, eth_proto))
-
+    try:
+        print('Scanning')
+        i = 0
+        while True:
+            raw_data, addr = TCP_conn.recvfrom(65536)
+            dest_mac, src_mac, eth_proto, data = unpack_frame(raw_data)
+            print('\nEthernet Frame:')
+            print('{} : TCP | Destination: {}, Source: {}, Protocol: {}'.format(i, dest_mac, src_mac, eth_proto))
+            i += 1
+    
+    except KeyboardInterrupt:
+        print('Packet Capture Stopped')
 
 # UNPACK ETHERNET FRAME
 def unpack_frame(data):
