@@ -1,12 +1,13 @@
 ### LINUX VERSION ###
 
 # IMPORT LIBRARIES
-#import pickle
+import pickle
 import socket
 import struct
+import numpy as np
+import pandas as pd
 import textwrap
 
-#knn_loaded = pickle.load('ids_model','rb')
 
 TAB_1 = '\t - '
 TAB_2 = '\t\t - '
@@ -19,9 +20,12 @@ DATA_TAB_3 = '\t\t\t  '
 DATA_TAB_4 = '\t\t\t\t  '
 
 
-
-class Stream():
-    pass
+class IDS():
+    with open('ids_model', 'rb') as f:
+        knnIDS = pickle.load(f)
+    unit = np.array([1,80244,2,0,12,0,6,6,6.0,0.0,0,0,0.0,0.0,149.543891,24.923982,80244.0,0.0,80244,80244,80244.0,0.0,80244,80244,0,0.0,0.0,0,0,0,0,0,0,40,0,24.923982,0.0,6,6,6.0,0.0,0.0,0,9.0,6.0,0.0,0,0,0,0,0,0,2,12,0,0,255,-1,1,20,0.0,0.0,0,0,0.0,0.0,0,0])
+    packetdf = pd.DataFrame(unit).transpose()
+    print(knnIDS.predict(packetdf))
 
 def sniff():
     TCP_conn = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
@@ -104,5 +108,5 @@ def format_multi_line(prefix, string, size=80):
 
 
 if __name__ == "__main__":
-    sniff()
+    IDS()
 

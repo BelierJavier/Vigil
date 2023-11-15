@@ -1,4 +1,4 @@
-#!/Users/BelierJavier/Desktop/Vigil/env/bin/python3
+#!/Users/BelierJavier/Desktop/Vigil/env/bin/python3.10
 # -*- coding: utf-8 -*-
 import re
 import sys
