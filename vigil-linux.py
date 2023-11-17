@@ -19,6 +19,7 @@ DATA_TAB_2 = '\t\t  '
 DATA_TAB_3 = '\t\t\t  '
 DATA_TAB_4 = '\t\t\t\t  '
 
+network_streams = []
 
 def IDS(packet):
     with open('ids_model', 'rb') as f:
@@ -27,9 +28,17 @@ def IDS(packet):
     packetdf = pd.DataFrame(packet).transpose()
     print(knnIDS.predict(packetdf))
 
+def capture_flow(src, dest, syn, ack, rst, fin):
+    packet = [src, dest, syn, ack, rst, fin]
+    if ((packet[:2] | reversed(packet[:2])) in network_streams):
+        print(network_streams)
+    else:
+        network_streams.append([packet])
+        print(network_streams)
+
+
 def sniff():
     TCP_conn = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
-    network_streams = []
 
     try:
         print('Scanning')
@@ -39,30 +48,27 @@ def sniff():
             dest_mac, src_mac, eth_proto, data = unpack_frame(raw_data)
             print(ipv4_packet(data))
             (version, header_length, ttl, proto, src, target, data ) = ipv4_packet(data)
-            print('\nEthernet Frame:')
-            print('{} : TCP | Destination MAC: {}, Source MAC: {}, Protocol: {}'.format(i, dest_mac, src_mac, eth_proto))
-            print(TAB_1 + 'Destination IP: {}, Source IP: {}, TTL: {}'.format(target, src, ttl))
+            #print('\nEthernet Frame:')
+            #print('{} : TCP | Destination MAC: {}, Source MAC: {}, Protocol: {}'.format(i, dest_mac, src_mac, eth_proto))
+            #print(TAB_1 + 'Destination IP: {}, Source IP: {}, TTL: {}'.format(target, src, ttl))
             i += 1
         
             try:
                 (src_port, dest_port, sequence, acknowledgment, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data) = tcp_segment(data)
                 capture_flow(src_port, dest_port, flag_syn, flag_ack, flag_rst, flag_fin)
-                print(TAB_1 + 'TCP Segment: ')
-                print(TAB_2 + 'Source Port: {}, Destination port: {}'.format(src_port, dest_port))
-                print(TAB_2 + 'Sequence: {}, Acknowledgment: {}'.format(sequence, acknowledgment))
-                print(TAB_2 + 'Flags: ')
-                print(TAB_3 + 'URG: {}, ACK: {}, PSH: {}, RST: {}, SYN: {}, FIN: {}'.format(flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin))
-                print(TAB_2 + 'Data: ')
-                print(format_multi_line(DATA_TAB_3, data))
+                #print(TAB_1 + 'TCP Segment: ')
+                #print(TAB_2 + 'Source Port: {}, Destination port: {}'.format(src_port, dest_port))
+                #print(TAB_2 + 'Sequence: {}, Acknowledgment: {}'.format(sequence, acknowledgment))
+                #print(TAB_2 + 'Flags: ')
+                #print(TAB_3 + 'URG: {}, ACK: {}, PSH: {}, RST: {}, SYN: {}, FIN: {}'.format(flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin))
+                #print(TAB_2 + 'Data: ')
+                #print(format_multi_line(DATA_TAB_3, data))
             
             except struct.error:
                 print('Struct Error Occurred: Not a TCP Packet')
     
     except KeyboardInterrupt:
         print('Packet Capture Stopped')
-
-    def capture_flow(src, dest, syn, ack, rst, fin ):
-        pass
 
 # UNPACK ETHERNET FRAME
 def unpack_frame(data):
