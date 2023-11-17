@@ -20,15 +20,16 @@ DATA_TAB_3 = '\t\t\t  '
 DATA_TAB_4 = '\t\t\t\t  '
 
 
-class IDS():
+def IDS(packet):
     with open('ids_model', 'rb') as f:
         knnIDS = pickle.load(f)
     unit = np.array([1,80244,2,0,12,0,6,6,6.0,0.0,0,0,0.0,0.0,149.543891,24.923982,80244.0,0.0,80244,80244,80244.0,0.0,80244,80244,0,0.0,0.0,0,0,0,0,0,0,40,0,24.923982,0.0,6,6,6.0,0.0,0.0,0,9.0,6.0,0.0,0,0,0,0,0,0,2,12,0,0,255,-1,1,20,0.0,0.0,0,0,0.0,0.0,0,0])
-    packetdf = pd.DataFrame(unit).transpose()
+    packetdf = pd.DataFrame(packet).transpose()
     print(knnIDS.predict(packetdf))
 
 def sniff():
     TCP_conn = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
+    network_streams = []
 
     try:
         print('Scanning')
@@ -36,12 +37,16 @@ def sniff():
         while True:
             raw_data, addr = TCP_conn.recvfrom(65536)
             dest_mac, src_mac, eth_proto, data = unpack_frame(raw_data)
+            print(ipv4_packet(data))
+            (version, header_length, ttl, proto, src, target, data ) = ipv4_packet(data)
             print('\nEthernet Frame:')
-            print('{} : TCP | Destination: {}, Source: {}, Protocol: {}'.format(i, dest_mac, src_mac, eth_proto))
+            print('{} : TCP | Destination MAC: {}, Source MAC: {}, Protocol: {}'.format(i, dest_mac, src_mac, eth_proto))
+            print(TAB_1 + 'Destination IP: {}, Source IP: {}, TTL: {}'.format(target, src, ttl))
             i += 1
         
             try:
                 (src_port, dest_port, sequence, acknowledgment, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data) = tcp_segment(data)
+                capture_flow(src_port, dest_port, flag_ack, flag_syn, flag_rst, flag_fin)
                 print(TAB_1 + 'TCP Segment: ')
                 print(TAB_2 + 'Source Port: {}, Destination port: {}'.format(src_port, dest_port))
                 print(TAB_2 + 'Sequence: {}, Acknowledgment: {}'.format(sequence, acknowledgment))
@@ -55,6 +60,9 @@ def sniff():
     
     except KeyboardInterrupt:
         print('Packet Capture Stopped')
+
+    def capture_flow(src, dest, ack, syn, rst, fin ):
+        pass
 
 # UNPACK ETHERNET FRAME
 def unpack_frame(data):
