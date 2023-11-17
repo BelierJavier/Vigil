@@ -46,7 +46,7 @@ def sniff():
         
             try:
                 (src_port, dest_port, sequence, acknowledgment, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data) = tcp_segment(data)
-                capture_flow(src_port, dest_port, flag_ack, flag_syn, flag_rst, flag_fin)
+                capture_flow(src_port, dest_port, flag_syn, flag_ack, flag_rst, flag_fin)
                 print(TAB_1 + 'TCP Segment: ')
                 print(TAB_2 + 'Source Port: {}, Destination port: {}'.format(src_port, dest_port))
                 print(TAB_2 + 'Sequence: {}, Acknowledgment: {}'.format(sequence, acknowledgment))
@@ -61,7 +61,7 @@ def sniff():
     except KeyboardInterrupt:
         print('Packet Capture Stopped')
 
-    def capture_flow(src, dest, ack, syn, rst, fin ):
+    def capture_flow(src, dest, syn, ack, rst, fin ):
         pass
 
 # UNPACK ETHERNET FRAME
