@@ -14,7 +14,7 @@ model_file = 'vigil_model.tar.gz'
 model = SKLearnModel(
     model_data=f's3://{default_bucket}/{model_file}',
     role=role,
-    entry_point='inference.py',
+    entry_point='deployment/inference.py',
     framework_version='1.2-1',
     py_version='py3'
 )
@@ -29,5 +29,7 @@ print(f'Model deployed to endpoint: {predictor.endpoint_name}')
 
 # Delete endpoint after usage
 
+'''
 predictor.delete_endpoint()
 print(f'Endpoint {predictor.endpoint_name} deleted')
+'''

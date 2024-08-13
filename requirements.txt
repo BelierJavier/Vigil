@@ -1,0 +1,6 @@
+scikit-learn==1.2.1
+numpy==1.26.4
+boto3==1.34.144
+sagemaker==2.227.0
+pandas==2.2.2
+schedule==1.2.2

@@ -1,4 +1,4 @@
-import joblib
+import pickle
 import os
 import json
 import numpy as np
@@ -6,7 +6,8 @@ import numpy as np
 def model_fn(model_dir):
     model_path = os.path.join(model_dir, 'vigil_model.pkl')
     print(f'Loading model from {model_path}')
-    model = joblib.load(model_path)
+    with open(model_path, 'rb') as f:
+        model = pickle.load(f)
     return model
 
 def input_fn(request_body, request_content_type):
