@@ -3,7 +3,8 @@ import numpy as np
 import json
 import pickle
 
-port_enc_mapping = {
+def infer_service_from_port(port):
+    port_enc_mapping = {
     0: 46, # private
     5: 49, # rje
     7: 12, # echo
@@ -70,9 +71,8 @@ port_enc_mapping = {
     995: 69, # pop3s
     6000: 1, # x11
     8001: 24 # http_8001
-}
+    }
 
-def infer_service_from_port(port):
     # Infer service from the port number
     return port_enc_mapping.get(port, 46)
 
@@ -199,13 +199,7 @@ def save_preprocessed_data(data, output_file):
         json.dump(data, f)
 
 
-def verify_numeric_data(data):
-    # Verify that all entries in the data are numeric
-    if not all(data.dtypes.apply(lambda x: np.issubdtype(x, np.number))):
-        raise ValueError("All features must be numeric.")
-
-
-if __name__ == "__main__":
+def mainPreprocessing():
     # Load logs
     with open('data_dump/vpc_logs.json', 'r') as f:
         logs = json.load(f)
@@ -220,7 +214,3 @@ if __name__ == "__main__":
     # Save preprocessed data
     output_file = 'data_dump/flow_logs.json'
     save_preprocessed_data(preprocessed_data, output_file)
-
-    # Verify preprocessed data is numerical
-    # data = load_preprocessed_data('datasets/flow_logs.csv')
-    # verify_numeric_data(data)

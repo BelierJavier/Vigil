@@ -47,10 +47,11 @@ def collect_vpc_logs(log_group, log_stream, start_time, end_time):
     return logs
 
 
-if __name__ == "__main__":
+def mainCollection():
 
     log_group = 'vpc-network-records'
     log_stream = 'eni-0387ec7084bd2bb47-all'
+
     start_time = int((datetime.now() - timedelta(minutes=10)).timestamp() * 1000) # 10 minutes ago
     end_time = int(datetime.now().timestamp() * 1000) # Current time
     logs = collect_vpc_logs(log_group, log_stream, start_time, end_time)
