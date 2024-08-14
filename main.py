@@ -35,6 +35,14 @@ def save_predictions(predictions, output_file):
     # Save the predictions to a CSV file
     pd.DataFrame(predictions, columns=['Prediction']).to_csv(output_file, index=False)
 
+def send_sns_alert(message, sns_topic_arn):
+    sns_client = boto3.client('sns')
+    sns_client.publish(
+        TopicArn=sns_topic_arn,
+        Message=message,
+        Subject='AWS Anomaly Detection Alert'
+    )
+    print(f"Alert sent: {message}")
 
 def main_predict_pipeline():
 
@@ -43,7 +51,7 @@ def main_predict_pipeline():
 
     # Paths to the necessary files
     preprocessed_data_file = 'data_dump/flow_logs.json'
-    output_predictions_file = 'predictions/predictions.json'
+    output_predictions_file = 'predictions/predictions.csv'
     sagemaker_endpoint_name = 'sagemaker-scikit-learn-2024-08-01-18-54-02-067'
 
     
@@ -55,6 +63,13 @@ def main_predict_pipeline():
     
     # Step 3: Save the predictions
     save_predictions(predictions, output_predictions_file)
+    print(f"Predictions saved to {output_predictions_file}")
+
+    # Step 4: Send SNS alert
+    if np.any(predictions > 0):  # Adjust condition based on your definition of a positive prediction
+        message = "Anomaly detected! Check the predictions for details."
+        sns_topic_arn = 'arn:aws:sns:us-east-2:851725192656:AnomalyDetection'  
+        send_sns_alert(message, sns_topic_arn)
     
     print(f"Predictions saved to {output_predictions_file}")
 
@@ -63,7 +78,7 @@ def main_predict_pipeline():
         os.remove("data_dump/vpc_logs.json")
 
 
-# Schedule the task to run every 5 minutes
+# Schedule the task to run every minute
 schedule.every(1).minutes.do(main_predict_pipeline)
 
 if __name__ == "__main__":
